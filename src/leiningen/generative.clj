@@ -6,18 +6,20 @@
 
 (defn- run-generative-tests [project]
   `(do
-    (println "Testing on" gen/*cores* "cores for" gen/*msec* "msec.")
-    (let [futures# (gen/test-dirs ~(:generative-path project))]
-      (doseq [f# futures#]
-        (try
-          @f#
-          (catch Throwable t#)
-            ;(.printStackTrace t#)
-            ;(System/exit -1))
-
-          (finally
-            (when-not ~leiningen.core/*interactive?*
-              (shutdown-agents))))))))
+     (let [path# ~(or (:generative-path project) "test/")]
+       (println "Testing generative tests in" path#
+                "on" gen/*cores* "cores for"
+                gen/*msec* "msec.")
+       (let [futures# (gen/test-dirs ~(:generative-path project))]
+         (doseq [f# futures#]
+           (try
+             @f#
+             (catch Throwable t#
+               (.printStackTrace t#)
+               (System/exit -1))
+             (finally
+              (when-not ~leiningen.core/*interactive?*
+                (shutdown-agents)))))))))
 
 (defn- set-generative-path-to-project [project]
   (let [generative-path (str (:root project)
