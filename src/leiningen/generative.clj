@@ -6,11 +6,11 @@
 
 (defn- run-generative-tests [project]
   `(do
-     (let [path# ~(or (:generative-path project) "test/")]
+     (let [path# ~(or (:generative-path project) (:test-path project))]
        (println "Testing generative tests in" path#
                 "on" gen/*cores* "cores for"
                 gen/*msec* "msec.")
-       (let [futures# (gen/test-dirs ~(:generative-path project))]
+       (let [futures# (gen/test-dirs path#)]
          (doseq [f# futures#]
            (try
              @f#
@@ -20,12 +20,6 @@
              (finally
               (when-not ~leiningen.core/*interactive?*
                 (shutdown-agents)))))))))
-
-(defn- set-generative-path-to-project [project]
-  (let [generative-path (str (:root project)
-                             java.io.File/separatorChar
-                             "generative")]
-    (merge {:generative-path generative-path} project)))
 
 (defn- add-generative-path-to-classpath [project]
   (update-in project
@@ -43,7 +37,6 @@
   [project & _]
   (let [new-project (-> project
                         add-generative-dependency
-                        set-generative-path-to-project
                         add-generative-path-to-classpath)]
     (eval-in-project
       new-project

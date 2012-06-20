@@ -18,7 +18,7 @@ To run tests defined with test.generative you can simply run:
 
     $ lein generative
 
-This will, by default run all tests in the project's `test` directory. If you prefer to run tests in a different directory then you can add something like the following to your `project.clj` properties:
+This will, by default run all tests in the project's test directory. If you prefer to use a seperate directory you can add something like the following to your `project.clj`:
 
     :generative-path "/path/to/your/tests"
 
