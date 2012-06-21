@@ -5,16 +5,15 @@
      (println "Testing generative tests in" [~@paths]
               "on" gen/*cores* "cores for"
               gen/*msec* "msec.")
-     (let [futures# (gen/test-dirs ~@paths)]
-       (doseq [f# futures#]
-         (try
-           @f#
-           (catch Throwable t#
-             (.printStackTrace t#)
-             (System/exit -1))
-           (finally
-            (when-not ~keep-alive?
-              (shutdown-agents))))))))
+     (let [futures# (gen/test-dirs ~@paths)
+           results# (doall (map (fn [f#] (try @f# (catch Throwable t# -1)))
+                                futures#))
+           code# (or (first (filter identity results#)) 0)]
+       (await gen/last-report)
+       (when-not (and ~keep-alive?
+                     (= code# 0))
+         (shutdown-agents)
+         (System/exit code#)))))
 
 (defn- add-generative-path-to-classpath [project classpath-id]
   (if-let [path (:generative-path project)]
