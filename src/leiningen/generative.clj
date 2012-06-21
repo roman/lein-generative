@@ -32,10 +32,17 @@
              [:extra-classpath-dirs]
              #(conj % (:generative-path project))))
 
+(defn add-generative-dependency [project]
+  (if (some #(= 'org.clojure/test.generative (first %)) (:dependencies project))
+    project
+    (update-in project [:dependencies]
+               conj '[org.clojure/test.generative "0.1.4"])))
+
 (defn generative
   "Run test.generative tests"
   [project & _]
   (let [new-project (-> project
+                        add-generative-dependency
                         set-generative-path-to-project
                         add-generative-path-to-classpath)]
     (eval-in-project
