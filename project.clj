@@ -1,5 +1,4 @@
-(defproject lein-generative "1.0.0-SNAPSHOT"
-  :description "FIXME: write description"
-  :dev-dependencies [[org.clojure/test.generative "0.1.3"]]
+(defproject lein-generative "0.1.4.1-SNAPSHOT"
+  :description "test.generative runner for Clojure contrib's test.generative."
   :eval-in-leiningen true)
 
